@@ -1,0 +1,45 @@
+# Node modules (for both frontend and backend)
+node_modules/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+build/
+dist/
+*.tgz
+
+# IDE and editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Package distribution
+*.tgz
+*.zip
+
+# Coverage reports
+coverage/
+*.lcov
+
+# Ignore all files in the frontend/build directory except for a single file
+/Frontend/build/*
+!/Frontend/build/.gitkeep
