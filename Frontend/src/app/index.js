@@ -1,10 +1,9 @@
-import { ToastContainer, toast } from 'react-toastify';
-
+// Frontend/src/app/index.js
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Main from "../layout/main";
 import Notes from "../notes";
 import Login from "../pages/login";
 import Loader from "../shared/loader";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Main from "../layout/main"
 
 function App() {
   return (

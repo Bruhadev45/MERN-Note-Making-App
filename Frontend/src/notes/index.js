@@ -1,56 +1,44 @@
-import React, { useEffect, useState } from "react";
-
-import { toast } from "react-toastify";
-import styles from "./notes.module.scss";
-import Wrapper from "../hoc/wrapper";
+import React from "react";
+import { useOutletContext } from "react-router-dom";
 import Greeting from "../components/atoms/greeting";
 import Note from "../components/card/note";
-import utils from "../utils/localstorage";
-import types from "../config/types";
-
+import Wrapper from "../hoc/wrapper";
+import styles from "./notes.module.scss";
 
 function Notes() {
-  const [notesColl, setNotesColl] = useState([]);
-  
-  useEffect(() => {
-    const token = utils.getFromLocalStorage('auth_key');
+  const { notesColl = [], focusNoteId, deleteNote, saveNote } = useOutletContext();
 
-    fetch( process.env.REACT_APP_API_URL + "/api/notes/all", {
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      method: "GET",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setNotesColl(data);
-      })
-      .catch((err) => {
-        toast.error(`Failed to load Notes ${err}`);
-      });
-  }, []);
+  const handleDelete = (id) => {
+    deleteNote(id);
+  };
+
+  const handleSave = (id, text) => {
+    saveNote(id, text);
+  };
 
   return (
     <section className={styles.container}>
       <Greeting />
       <main>
-        {notesColl.map((note, i) => {
-          return (
+        {notesColl.length > 0 ? (
+          notesColl.map((note) => (
             <Note
-              key={note.id}
-              text={note.text}
-              color={note.color}
-              date={note.createdAt}
+              key={note._id}
+              text={note.text || ""}
+              color={note.color || "#ffffff"}
+              date={note.createdAt || ""}
+              id={note._id}
+              onDelete={handleDelete}
+              onSave={handleSave}
+              isEditing={note._id === focusNoteId}
             />
-          );
-        })}
+          ))
+        ) : (
+          <p>No notes available</p>
+        )}
       </main>
     </section>
   );
 }
 
 export default Wrapper(Notes);
-
-
-

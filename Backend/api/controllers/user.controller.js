@@ -7,14 +7,14 @@ async function signup(req, res) {
   const userDetails = req.body;
   try {
     if (!userDetails) throw Error("User Details is missing");
-    const { username, name, email, password } = userDetails;
+    
+    const { name, email, password } = userDetails;
     const salt = await bcrypt.genSalt(7);
 
     const passwordHash = await bcrypt.hash(password, salt);
     console.log(passwordHash);
-
+   
     const newUser = new User({
-      username,
       name,
       email,
       password: passwordHash,

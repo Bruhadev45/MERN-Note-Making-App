@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-
 import utils from "../../../utils/localstorage";
 import styles from "./greeting.module.scss";
 
@@ -10,7 +9,7 @@ function Greeting() {
   useEffect(() => {
     const token = utils.getFromLocalStorage('auth_key');
 
-    fetch( process.env.REACT_APP_API_URL + "/api/auth", {
+    fetch(`${process.env.REACT_APP_API_URL}/api/auth`, {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`

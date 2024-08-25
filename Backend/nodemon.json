@@ -1,7 +1,0 @@
-{
-    "watch": ["src", "config"],
-    "ext": "js,json",
-    "ignore": ["src/public/*", "src/uploads/*"],
-    "exec": "node src/index.js"
-  }
-  

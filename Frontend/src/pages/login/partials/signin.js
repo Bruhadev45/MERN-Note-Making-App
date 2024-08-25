@@ -1,8 +1,7 @@
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-import React, { useState } from "react";
 import Button from "../../../components/atoms/button";
 import Input from "../../../components/atoms/input";
 import utils from "../../../utils/localstorage";
@@ -18,16 +17,16 @@ function Signin() {
     if (!email.length || !password.length)
       toast.error("some required fields are empty");
 
-    fetch( process.env.REACT_APP_API_URL + "/api/users/login", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-      method: "POST",
-    })
+      fetch(`${process.env.REACT_APP_API_URL}/api/users/login`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+        method: "POST",
+      })
       .then((res) => res.json())
       .then((data) => {
         if (data?.success === 200) {

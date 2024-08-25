@@ -1,11 +1,8 @@
 import React from "react";
-
 import { ToastContainer } from "react-toastify";
-
-import Left from "./section/left";
-import Form from "./section/form";
-
 import styles from "./login.module.scss";
+import Form from "./section/form";
+import Left from "./section/left";
 
 function Login() {
   return (

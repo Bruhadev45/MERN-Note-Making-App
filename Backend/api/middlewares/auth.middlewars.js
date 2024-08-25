@@ -17,7 +17,7 @@ function auth(req, res, next) {
       next();
     });
   } else {
-    res.sendStatus(401); // Unauthorized
+    res.sendStatus(401);
   }
 }
 

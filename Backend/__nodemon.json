@@ -1,0 +1,5 @@
+{
+  "watch": ["api/*.js", "api/routes/*.js", "api/models/*.js"],
+  "ext": "js,json",
+  "exec": "node api/index.js"
+}

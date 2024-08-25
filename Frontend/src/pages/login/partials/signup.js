@@ -1,12 +1,11 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
-import React, { useState } from "react";
-
-import Input from "../../../components/atoms/input";
 import Button from "../../../components/atoms/button";
+import Input from "../../../components/atoms/input";
+import utils from "../../../utils/localstorage";
 import styles from "./partials.module.scss";
-import Signin from "./signin";
 
 function Signup(props) {
   const [email, setEmail] = useState("");
@@ -18,7 +17,7 @@ function Signup(props) {
     if (!email.length || !name.length || !password.length)
       toast.error("some required fields are empty");
 
-    fetch("http://localhost:8080/api/users/signup", {
+    fetch(`${process.env.REACT_APP_API_URL}/api/users/signup`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -33,8 +32,32 @@ function Signup(props) {
       .then((data) => {
         if (data?.success === 201) {
           toast.success("user registered successfully!");
-          props.handleSwitch();
-          navigate("/notes");
+
+          fetch(`${process.env.REACT_APP_API_URL}/api/users/login`, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email,
+              password,
+            }),
+            method: "POST",
+          })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data?.success === 200) {
+              toast.success("user login successfully!");
+              utils.addToLocalStorage('auth_key', data.token);
+              navigate("/notes");
+            } else {
+              toast.error(data?.message);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            toast.error("user login failed!");
+          });
+
         } else {
           toast.error(data?.message);
         }
@@ -47,14 +70,6 @@ function Signup(props) {
 
   return (
     <div className={styles.form}>
-      <Button
-        text={"Join with Google"}
-        icon={"ri:google-fill"}
-        className={styles.google}
-      />
-      <div className={styles.option}>
-        <span>or join with email address</span>
-      </div>
       <article>
         <Input
           value={name}

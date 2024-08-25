@@ -1,7 +1,7 @@
 [{
     "title": "Home",
     "icon":"carbon:home",
-    "path":"/notes"
+    "path":"/"
 },
 {
     "title": "Add Notes",

@@ -1,18 +1,20 @@
-import React, { useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
-
-import styles from "./navbar.module.scss";
+import React from "react";
 import Input from "../../components/atoms/input";
+import styles from "./navbar.module.scss";
 
-function Navbar() {
-  const [searchText, setSearchText] = useState("");
+function Navbar({ onSearch, searchText }) {
+  const handleSearchChange = (e) => {
+    onSearch(e.target.value);
+  };
+
   return (
     <header className={styles.navbar}>
       <article className={styles.searchBar}>
         <Icon icon="material-symbols:search" />
         <Input
           value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
+          onChange={handleSearchChange}
           placeholder={"Search Notes"}
           type={"text"}
           className={styles.field}

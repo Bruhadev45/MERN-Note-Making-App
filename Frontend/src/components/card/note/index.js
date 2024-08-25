@@ -1,54 +1,67 @@
-import React, { useState } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { formatDate } from "../../../utils/formatDate";
-import utils from "../../../utils/localstorage";
 import Button from "../../../components/atoms/button";
+import { formatDate } from "../../../utils/formatDate";
 import styles from "./note.module.scss";
 
-function Note(props) {
-  const { text, date, color } = props;
+const Note = forwardRef(({ text, date, id, onDelete, onSave, isEditing }, ref) => {
   const [expand, setExpand] = useState(false);
-  const [noteText, setNoteText] = useState("");
+  const [noteText, setNoteText] = useState(text);
+  const [editing, setEditing] = useState(isEditing);
+  const [isFirstEdit, setIsFirstEdit] = useState(true);
+  const textareaRef = useRef(null);
 
-  const handleSave = () => {
-    const authToken = utils.getFromLocalStorage("auth_key");
+  useImperativeHandle(ref, () => ({
+    focusTextarea() {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        textareaRef.current.setSelectionRange(noteText.length, noteText.length);
+      }
+    },
+  }));
 
-    if(!authToken) toast.error("User should be authentic!")
-
-    if (!noteText.length || noteText.split(" ").length < 2 )
-      toast.error("Notes text should atleast contain 2 words!");
-
-    fetch("http://localhost:8080/api/notes", {
-      headers: {
-        "Content-Type": "application/json",
-        authorization: authToken,
-      },
-      body: JSON.stringify({
-        text: noteText,
-        color,
-      }),
-      method: "POST",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.success === 200) {
-          toast.success("Notes added successfully!");
-        } else {
-          toast.error(data?.message);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error("Notes creation failed!");
-      });
+  const handleEdit = () => {
+    setEditing(true);
+    if (isFirstEdit && textareaRef.current) {
+      textareaRef.current.focus();
+      textareaRef.current.setSelectionRange(noteText.length, noteText.length);
+      setIsFirstEdit(false);
+    }
   };
 
+  const handleSave = () => {
+    if (!noteText.trim().length) {
+      toast.error("Note text should not be empty!");
+      return;
+    }
+
+    onSave(id, noteText);
+    setEditing(false);
+  };
+
+  const handleDelete = () => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this note?");
+    if (!confirmDelete) return;
+
+    onDelete(id);
+  };
+
+  useEffect(() => {
+    if (editing && textareaRef.current) {
+      textareaRef.current.focus();
+      if (isFirstEdit) {
+        textareaRef.current.setSelectionRange(noteText.length, noteText.length);
+        setIsFirstEdit(false);
+      }
+    }
+  }, [editing, noteText, isFirstEdit]);
+
   return (
-    <article className={styles.container} style={{ backgroundColor: color }}>
+    <article id={`note-${id}`} className={`${styles.container} ${editing ? styles.editing : ''}`}>
       <div>
-        {!text.length ? (
+        {editing ? (
           <textarea
+            ref={textareaRef}
             value={noteText}
             onChange={(e) => setNoteText(e.target.value)}
             className={styles.textarea}
@@ -56,9 +69,9 @@ function Note(props) {
         ) : (
           <>
             <p className={expand ? styles.expanded : ""}>
-              {text.substring(0, 154)}
+              {noteText.substring(0, 154)}
             </p>
-            {text.length > 154 ? (
+            {noteText.length > 154 ? (
               <button onClick={() => setExpand((prev) => !prev)}>
                 Read {expand ? "less" : "more"}
               </button>
@@ -68,18 +81,23 @@ function Note(props) {
       </div>
       <footer className={styles.footer}>
         <div>{formatDate(date)}</div>
-        {/* <div>{date}</div> */}
-        {noteText.length ? (
+        {editing ? (
           <Button
-            text={"save"}
+            text={"Save"}
             className={styles.saveBtn}
             handleClick={handleSave}
           />
-        ) : null}
-        {/* <button>save</button> */}
+        ) : (
+          <Button
+            text={"Edit"}
+            className={styles.editBtn}
+            handleClick={handleEdit}
+          />
+        )}
+        <Button text={"Delete"} className={styles.deleteBtn} handleClick={handleDelete} />
       </footer>
     </article>
   );
-}
+});
 
 export default Note;
